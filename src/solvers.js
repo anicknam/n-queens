@@ -18,51 +18,51 @@
 window.findNRooksSolution = function(n) {
   var solution = new Board({n:n});
 
+  var storage = [];
   var rowCol;
   //debugger;
-  /////////////////////////////////////////////////////////////////////////////
-  var findNRooksHelper = function(solution,row,col,n) {
-    if (solution.numOfPlayers() === n && !solution.hasAnyRowConflicts() && !solution.hasAnyColConflicts()) {
-      return solution;
-    }
-    solution.togglePiece(row,col);
-   // Place the first player on the first cell
-    var findNextPlayerPosition = function(){
-      for (var i = row; i < n; i++) {
-        for (var j = col+1; j < n; j++) {
-          solution.togglePiece(i,j);
-          if (!solution.hasAnyRowConflicts() && !solution.hasAnyColConflicts()) {
-            row = i;
-            col = j;
-            solution.togglePiece(i,j);
-            return [row,col]; 
-          } else {
-            solution.togglePiece(i,j);
-          }
-        }
-      }
-      //debugger;
-    };
 
-    rowCol = findNextPlayerPosition();
+  //var findNRooksHelper = function(solution,n) {
+    // if (solution.numOfPlayers() === n && !solution.hasAnyRowConflicts() && !solution.hasAnyColConflicts()) {
+    //   return solution;
+    // }
 
-    if (rowCol) {
-      findNRooksHelper(solution,rowCol[0],rowCol[1],n);
-    }
+  for (var x=0; x < n; x++){
+    for (var y=0; y < Math.floor(n/2); y++){
+      //EMPTY BOARD
+      solution.togglePiece(x,y);
+      //The following should be done for first player being positioned 
+      // in 0 to Math.floor(n/2)
+      ////////////////////////////////////////////////////////////////////////////////////
+      var findNextPlayerPosition = function(row,col){
+        for (var i = 1; i < n; i++) {
+          for (var j = 1; j < n; j++) {
+            var r = (row + i) % n ;
+            var c = ( col + j ) % n ;
+            solution.togglePiece(r,c);
+            if (!solution.hasAnyRowConflicts() && !solution.hasAnyColConflicts()) {
+              if (solution.numOfPlayers() === n) {
+                storage.push(JSON.stringify(solution)); 
+                return;
+              } else {
+                row = r;
+                col = c;
+                findNextPlayerPosition(row,col);
+              } 
+            } else {
+              solution.togglePiece(r,c);
+            }
+          } // end of j
+        } // end of i
+      }; // end of findNextPlayerPosition
+      ////////////////////////////////////////////////////////////////////////////////////
+       // START RECURSION
+      findNextPlayerPosition(x,y);
+    } // end of y
+  } // end of x
 
-  };
-///////////////////////////////////////////////////////////////////////////////
-  // START RECURSION
-  findNRooksHelper(solution,0,0,n);
+  //};
 
- // 2. recursion -------
- // ignore the row and column where the first player sits
- // place the next player anywhere else
- // apply the conflict checks for row and column 
- // if passed move on to the next player
- // check if the player no is less than n
- // go to line 2
-  debugger;
   console.log('Single solution for ' + n + ' rooks:', JSON.stringify(solution));
   return solution.rows();
 };
