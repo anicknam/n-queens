@@ -1,6 +1,12 @@
 describe('solvers', function() {
   window.displayBoard = function() {};
 
+  describe('Verify simple rooks solution', function() {
+    var solutionBoard = new Board(findNRooksSolution(4));
+    console.log("Solution "+solutionBoard);
+    debugger;
+
+  });
   describe('findNRooksSolution()', function() {
 
     it('finds a valid solution for n of 1-8', function() {

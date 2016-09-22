@@ -196,7 +196,24 @@
       }
       return false;
         
+    },
+
+    // Added helper functions for solvers implementation:
+
+    numOfPlayers: function() {
+
+      var sum = 0;
+
+      for (var i=0; i<this.get("n"); i++){
+        sum+= _.reduce(this.get(i),function(accum,item){
+          return accum+item;
+        });
+      }
+
+      return sum;
     }
+
+
 
     /*--------------------  End of Helper Functions  ---------------------*/
 
