@@ -18,50 +18,40 @@
 window.findNRooksSolution = function(n) {
   var solution = new Board({n:n});
 
-  var storage = [];
   var rowCol;
-  //debugger;
+  /////////////////////////////////////////////////////////////////////////////
+  var findNRooksHelper = function(solution,row,col,n) {
+    if (solution.numOfPlayers() === n && !solution.hasAnyRowConflicts() && !solution.hasAnyColConflicts()) {
+      return solution;
+    }
+    solution.togglePiece(row,col);
+   // Place the first player on the first cell
+    var findNextPlayerPosition = function(){
+      for (var i = row; i < n; i++) {
+        for (var j = col+1; j < n; j++) {
+          solution.togglePiece(i,j);
+          if (!solution.hasAnyRowConflicts() && !solution.hasAnyColConflicts()) {
+            row = i;
+            col = j;
+            solution.togglePiece(i,j);
+            return [row,col]; 
+          } else {
+            solution.togglePiece(i,j);
+          }
+        }
+      }
+    };
 
-  //var findNRooksHelper = function(solution,n) {
-    // if (solution.numOfPlayers() === n && !solution.hasAnyRowConflicts() && !solution.hasAnyColConflicts()) {
-    //   return solution;
-    // }
+    rowCol = findNextPlayerPosition();
 
-  for (var x=0; x < n; x++){
-    for (var y=0; y < Math.floor(n/2); y++){
-      //EMPTY BOARD
-      solution.togglePiece(x,y);
-      //The following should be done for first player being positioned 
-      // in 0 to Math.floor(n/2)
-      ////////////////////////////////////////////////////////////////////////////////////
-      var findNextPlayerPosition = function(row,col){
-        for (var i = 1; i < n; i++) {
-          for (var j = 1; j < n; j++) {
-            var r = (row + i) % n ;
-            var c = ( col + j ) % n ;
-            solution.togglePiece(r,c);
-            if (!solution.hasAnyRowConflicts() && !solution.hasAnyColConflicts()) {
-              if (solution.numOfPlayers() === n) {
-                storage.push(JSON.stringify(solution)); 
-                return;
-              } else {
-                row = r;
-                col = c;
-                findNextPlayerPosition(row,col);
-              } 
-            } else {
-              solution.togglePiece(r,c);
-            }
-          } // end of j
-        } // end of i
-      }; // end of findNextPlayerPosition
-      ////////////////////////////////////////////////////////////////////////////////////
-       // START RECURSION
-      findNextPlayerPosition(x,y);
-    } // end of y
-  } // end of x
+    if (rowCol) {
+      findNRooksHelper(solution,rowCol[0],rowCol[1],n);
+    }
 
-  //};
+  };
+///////////////////////////////////////////////////////////////////////////////
+  // START RECURSION
+  findNRooksHelper(solution,0,0,n);
 
   console.log('Single solution for ' + n + ' rooks:', JSON.stringify(solution));
   return solution.rows();
@@ -71,12 +61,68 @@ window.findNRooksSolution = function(n) {
 
 
 
+
 // return the number of nxn chessboards that exist, with n rooks placed such that none of them can attack each other
 window.countNRooksSolutions = function(n) {
-  var solutionCount = undefined; //fixme
+  var solution = new Board({n:n});
 
-  console.log('Number of solutions for ' + n + ' rooks:', solutionCount);
-  return solutionCount;
+  var storage = [];
+  //var rowCol;
+  
+
+  //var findNRooksHelper = function(solution,n) {
+    // if (solution.numOfPlayers() === n && !solution.hasAnyRowConflicts() && !solution.hasAnyColConflicts()) {
+    //   return solution;
+    // }
+
+  for (var x=0; x < n; x++){
+    for (var y=0; y < Math.floor(n/2); y++){
+      //EMPTY BOARD
+      solution = new Board({n:n});
+      solution.togglePiece(x,y);
+      //The following should be done for first player being positioned 
+      // in 0 to Math.floor(n/2)
+      ////////////////////////////////////////////////////////////////////////////////////
+      var findNextPlayerPosition = function(row,col){
+        for (var i = 0; i < n; i++) {
+          for (var j = 1; j < n; j++) {
+            var r = (row + i) % n ;
+            var c = ( col + j ) % n ;
+            solution.togglePiece(r,c);
+            if (!solution.hasAnyRowConflicts() && !solution.hasAnyColConflicts()) {
+              if (solution.numOfPlayers() === n) {
+                storage.push(JSON.stringify(solution)); 
+                debugger;
+                solution.togglePiece(r,c);
+                return;
+              } else {
+                row = r;
+                col = c;
+                findNextPlayerPosition(row,col);
+                solution.togglePiece(row,col);
+              } 
+            } else {
+              solution.togglePiece(r,c);
+            }
+          } // end of j
+        } // end of i
+      }; // end of findNextPlayerPosition
+      ////////////////////////////////////////////////////////////////////////////////////
+       // START RECURSION
+      debugger;
+      findNextPlayerPosition(x,y);
+    } // end of y
+  } // end of x
+
+  //};
+
+  console.log('Count N Rooks ' + n + ' rooks:', JSON.stringify(solution));
+  //return solution.rows();
+
+  //UNIQUE
+  debugger;
+  var uniqStorage = _.uniq(storage);
+  return uniqStorage.length;
 };
 
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n queens placed such that none of them can attack each other
